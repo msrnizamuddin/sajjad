@@ -1,6 +1,6 @@
 schema_version: 1
 dataset: hiba
-status: candidate_pending_official_acquisition_audit
+status: benign_vocabulary_mapped_pending_full_audit
 matching_policy:
   method: exact_after_unicode_casefold_and_whitespace_normalization
   substring_matching_allowed: false
@@ -50,11 +50,63 @@ mappings:
     mapped_stage_2_label: ""
     include_primary_evaluation: false
     exclusion_reason: excluded_actinic_keratosis_primary_mapping
+  nevus:
+    canonical_diagnosis: melanocytic_nevus
+    mapped_final_label: non_malignant
+    mapped_stage_1_label: non_malignant
+    mapped_stage_2_label: ""
+    include_primary_evaluation: true
+    exclusion_reason: ""
+  seborrheic keratosis:
+    canonical_diagnosis: benign_keratosis_like_lesion
+    mapped_final_label: non_malignant
+    mapped_stage_1_label: non_malignant
+    mapped_stage_2_label: ""
+    include_primary_evaluation: true
+    exclusion_reason: ""
+  dermatofibroma:
+    canonical_diagnosis: dermatofibroma
+    mapped_final_label: non_malignant
+    mapped_stage_1_label: non_malignant
+    mapped_stage_2_label: ""
+    include_primary_evaluation: true
+    exclusion_reason: ""
+  vascular lesion:
+    canonical_diagnosis: vascular_lesion
+    mapped_final_label: non_malignant
+    mapped_stage_1_label: non_malignant
+    mapped_stage_2_label: ""
+    include_primary_evaluation: true
+    exclusion_reason: ""
+  solar lentigo:
+    canonical_diagnosis: benign_keratosis_like_lesion
+    mapped_final_label: non_malignant
+    mapped_stage_1_label: non_malignant
+    mapped_stage_2_label: ""
+    include_primary_evaluation: true
+    exclusion_reason: ""
+  lichenoid keratosis:
+    canonical_diagnosis: benign_keratosis_like_lesion
+    mapped_final_label: non_malignant
+    mapped_stage_1_label: non_malignant
+    mapped_stage_2_label: ""
+    include_primary_evaluation: true
+    exclusion_reason: ""
 
-unresolved_entries:
+resolved_entries:
   - category: benign_diagnosis_vocabulary
-    status: unresolved_pending_official_metadata_inventory_and_human_review
-    policy: exclude_and_block_approval_until_explicit_mapping_is_frozen
+    status: resolved_against_observed_hiba_metadata_2026_08_31
+    note: >
+      Mapped against the actual diagnosis vocabulary observed in the official
+      HIBA collection 251 metadata (nevus, seborrheic keratosis, dermatofibroma,
+      vascular lesion, solar lentigo, lichenoid keratosis) -- all recognized as
+      non_malignant here, consistent with this project's own ISIC2019
+      flat_four_class_v1 mapping (src/data/isic2019_dataset.py), which already
+      treats melanocytic_nevus, benign_keratosis_like_lesion (the ISIC BKL
+      superclass covering seborrheic/solar-lentigo/lichenoid-keratosis
+      subtypes), dermatofibroma, and vascular_lesion identically. Any
+      diagnosis string not listed under mappings above is still excluded and
+      blocks approval, per matching_policy.unknown_value_policy.
 excluded_categories:
   ambiguous: excluded_ambiguous_diagnosis
   unsupported: excluded_unsupported_diagnosis
