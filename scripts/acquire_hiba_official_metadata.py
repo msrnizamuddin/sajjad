@@ -272,6 +272,7 @@ def collect_metadata(
                 )
             endpoint, page_payload, status = page_responses[page_number - 1]
         else:
+            print(f"Fetching image page {page_number} ({len(records)} images so far)...", flush=True)
             page_payload, status = fetcher(
                 page_endpoint,
                 timeout=timeout,
@@ -279,6 +280,11 @@ def collect_metadata(
                 backoff_seconds=backoff_seconds,
             )
             endpoint = page_endpoint
+            # A brief pause between sequential page requests. The live API has been
+            # observed to occasionally stall (accept the connection, never send a
+            # response) after several rapid requests in a row; this is cheap
+            # insurance against that, not a correctness requirement.
+            time.sleep(0.25)
         items, next_url = _page_items(page_payload)
         request_log.append({
             "endpoint_url": endpoint,
