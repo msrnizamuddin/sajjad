@@ -1,0 +1,5 @@
+system,routing,condition,macro_f1,balanced_accuracy
+shared,soft,predicted,0.6264742015828365,0.6444213933547576
+shared,soft,oracle,0.7870983567133057,0.7829372470110153
+dedicated,soft,predicted,0.6270088838368375,0.6345583233893489
+dedicated,soft,oracle,0.7918179890356734,0.7797371939272814
