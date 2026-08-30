@@ -73,10 +73,27 @@ def verify_collection(payload: Mapping[str, Any]) -> dict[str, Any]:
         parsed_id = int(collection_id)
     except (TypeError, ValueError) as exc:
         raise AcquisitionError("Collection response has no valid collection ID.") from exc
-    try:
-        parsed_count = int(count)
-    except (TypeError, ValueError) as exc:
-        raise AcquisitionError("Collection response has no valid image count.") from exc
+    # The ISIC Archive API's /collections/{id}/ endpoint has stopped returning any
+    # image-count field (imageCount/image_count/images.count/count all absent as of
+    # 2026); this collection-level count was only ever a pre-flight sanity check.
+    # The authoritative check already happens later in collect_metadata(), which
+    # compares the actual number of records retrieved from the paginated /images/
+    # endpoint against EXPECTED_IMAGE_COUNT. So when the collection response omits
+    # a count field entirely, skip this early check rather than fail acquisition on
+    # a field the live API no longer sends; if the field IS present, still enforce it.
+    parsed_count: int | None
+    if count is None:
+        parsed_count = None
+    else:
+        try:
+            parsed_count = int(count)
+        except (TypeError, ValueError) as exc:
+            raise AcquisitionError("Collection response has an invalid image count.") from exc
+        if parsed_count != EXPECTED_IMAGE_COUNT:
+            raise AcquisitionError(
+                "Expected image-count mismatch: "
+                f"expected {EXPECTED_IMAGE_COUNT}, got {parsed_count}."
+            )
     if parsed_id != COLLECTION_ID:
         raise AcquisitionError(
             f"Collection ID mismatch: expected {COLLECTION_ID}, got {parsed_id}."
@@ -88,11 +105,6 @@ def verify_collection(payload: Mapping[str, Any]) -> dict[str, Any]:
     if str(title) != EXPECTED_TITLE:
         raise AcquisitionError(
             f"Title mismatch: expected {EXPECTED_TITLE!r}, got {title!r}."
-        )
-    if parsed_count != EXPECTED_IMAGE_COUNT:
-        raise AcquisitionError(
-            "Expected image-count mismatch: "
-            f"expected {EXPECTED_IMAGE_COUNT}, got {parsed_count}."
         )
     return {
         "collection_id": parsed_id,
